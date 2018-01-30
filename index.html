@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="css/style.css">
+    <title>COT: Search Engine UI</title>
+  </head>
+  <body>
+    <div class="container">
+    <h1 id="cot-title">College Open Textbooks</h1>
+    <div id="search-fields">
+      <div class="search-field">
+        <label for="discipline">Discipline:</label>
+        <select name="discipline" id="discipline" multiple="multiple">
+        </select>
+      </div>
+      <br>
+      <div class="search-field">
+        <label for="title">Title:</label>
+        <input id="title" type="text" name="title">
+      </div>
+      <br>
+      <div class="search-field">
+        <label for="author">Author/Editor:</label>
+        <input id="author-name" type="text" name="name">
+      </div>
+      <br>
+      <div class="license-ancillaries">
+        <div class="search-field">
+          <label for="license">License:</label>
+          <select name="license" id="license"></select>
+        </div>
+        <br>
+        <div class="search-field">
+          <label for="ancillaries">Ancillaries:</label>
+          <input id="ancillaries" type="text" name="ancillaries">
+        </div>
+        <br>
+      </div>
+      <div class="reviews-respository">
+        <div class="search-field">
+          <label for="reviews">Peer Reviewed:</label>
+          <input id="peer-reviewed" type="text" name="peer-reviewed">
+        </div>
+        <br>
+        <div class="search-field">
+          <label for="repository">Repository:</label>
+          <input id="repository" type="text" name="repository">
+        </div>
+        <br>
+      </div>
+    </div>
+    <input id="search-button" type="submit" value="Search">
+  </div>
+  <div class="display-results">
+    <ul id="list"></ul>
+  </div>
+  <script src="js/script.js"></script>
+  </body>
+</html>
