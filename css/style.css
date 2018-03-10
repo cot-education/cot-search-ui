@@ -1,0 +1,54 @@
+.container {
+  display: grid;
+  grid-template-columns: 20% 60% 10%;
+  grid-template-rows: 75px 350px 50px auto;
+}
+#cot-title {
+  grid-column-start: 2;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 1;
+  margin: 0 auto;
+}
+#search-fields {
+  grid-column-start: 2;
+  grid-column-end: 2;
+  grid-row-start: 2;
+  grid-row-end: 2;
+  padding: 10px;
+  border: 1px solid black;
+}
+.license-ancillaries, .reviews-respository {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+.license-ancillaries :last-of-type, .reviews-respository :last-of-type{
+  margin: 5px 10px 5px 0px;
+}
+.search-field {
+  padding: 5px;
+}
+#search-button {
+  grid-column-start: 2;
+  grid-column-end: 2;
+  grid-row-start: 3;
+  grid-row-end: 3;
+  width: 20%;
+  margin: 0 auto;
+  border: 1px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.display-results {
+  display: grid;
+  grid-template-columns: 10% 80% 10%;
+  grid-template-rows: 400px auto;
+}
+#list {
+  grid-column-start: 2;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 1;
+  overflow: scroll;
+}
