@@ -7,9 +7,10 @@ const author = document.querySelector('#author-name');
 const title = document.querySelector('#title');
 
 function getAuthor() {
-  // fetch(`http://52.11.188.162/author`)
+  // fetch(baseUrl + 'tags')
   //   .then(response => response.json())
-  //   .then(data => console.log(data));
+  //   .then(data => console.log(data))
+  //   .catch(error => console.error(error));
 }
 
 
@@ -30,7 +31,7 @@ let searchBooksObj = {
   "licenseCodes": [
     "string"
   ],
-  "partialTitle": "string",
+  "partialTitle": title.value,
   "partialUrl": "string",
   "repositoryIds": [
     0
@@ -40,24 +41,19 @@ let searchBooksObj = {
   ]
 }
 
-//I am currently trying to use the /search endpoint to get better results.
+// I am currently trying to use the /search endpoint to get better results.
 function searchBooks() {
-  fetch(`http://52.11.188.162/search`, {
+  fetch(baseUrl + 'search', {
     body: JSON.stringify(searchBooksObj),
     cache: 'no-cache',
     headers: {
       'content-type': 'application/json',
     },
     method: 'POST',
-    mode: 'cors',
-    redirect: 'follow',
   }).then(response => response.json())
     .then(data => console.log(data))
     .catch(error => console.error(error));
-
 }
-
-
 
 function init() {
   populateLicenseList();
@@ -69,7 +65,6 @@ btn.addEventListener("click", () => {
   getAuthor();
   searchBooks();
 });
-
 
 // These are the licenses provided from the spec that the user can select
 const populateLicenseList = () => {
@@ -85,16 +80,21 @@ const populateLicenseList = () => {
 
 // This populates the disciplines drop down
 const populateDisciplineList = () => {
-  fetch('http://52.11.188.162/' + 'tag').then(function(disciplineResponse) {
+  const disciplineList = document.querySelector('#disciplines');
+  fetch(baseUrl + 'tag').then(function(disciplineResponse) {
     return disciplineResponse.json();
   }).then(function(disciplines) {
-    const disciplineList = document.getElementById('discipline');
-    disciplines.forEach((discipline) => {
-      const disciplineListItem = document.createElement("option");
-        disciplineListItem.textContent = discipline.name;
-        disciplineListItem.value = discipline.name;
-        disciplineListItem.setAttribute('class', 'discipline-item');
-        disciplineList.appendChild(disciplineListItem);
+    const lists = disciplines.map((i) => [i.name, i.id]  );
+    //user awesomplete js library to dynamically list tags
+    new Awesomplete(disciplineList, {
+      list: lists,
+      replace: function(name) {
+        this.input.value = name.label
+      }
+    });
+    //get selected tag and populate tag key in searchBookObj to POST
+    disciplineList.addEventListener("awesomplete-select", function(event) {
+      searchBooksObj.tagIds = event.text.value;
     });
   });
 }
