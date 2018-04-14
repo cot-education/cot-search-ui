@@ -55,8 +55,6 @@ function searchBooks() {
     .catch(error => console.error(error));
 }
 
-
-
 function init() {
   populateLicenseList();
   populateDisciplineList();
@@ -100,6 +98,7 @@ const populateDisciplineList = () => {
     });
   });
 }
+
 // Build the results list from the user input
 const buildList = (resourceItem) => {
   let li = `<li>
