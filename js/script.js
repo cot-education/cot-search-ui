@@ -32,7 +32,7 @@ function searchBooks() {
     headers: {
       'content-type': 'application/json',
     },
-    method: 'POST',
+    method: 'POST'
   }).then(response => response.json())
     .then(data => {
       buildList(data);
@@ -129,6 +129,7 @@ function getLicences() {
       licenseListItem.value = licenses[i];
       licenseList.appendChild(licenseListItem);
   }
+
   //get user selected license from the dropdown and populate license key in searchBookObj to POST
   licenseList.addEventListener('change', (e) => {
     searchBooksObj.licenseCodes.push(e.target.value);
