@@ -1,3 +1,4 @@
+
 // MY QUESTIONS:
 // I keep getting an http status of 400 whenever I request /author(s)
 // I've reviewed the Swagger documentation and I'm not sure what I'm
@@ -26,6 +27,7 @@ function searchBooks() {
   if (Object.keys(searchBooksObj).length === 0) alert('Please, enter some data to see results.')
   //this log just is to double-check the actual body of the object we're sending
   console.log(JSON.stringify(searchBooksObj));
+
   fetch(baseUrl + 'search', {
     body: JSON.stringify(searchBooksObj),
     cache: 'no-cache',
@@ -39,7 +41,6 @@ function searchBooks() {
     })
     .catch(error => console.error(error));
 }
-
 
 //kick things off when the page loads
 function init() {
@@ -59,7 +60,6 @@ btn.addEventListener("click", () => {
   //not working at the moment
   getAuthors();
 });
-
 
 //this populates/GETs disciplines. populate searchBooksObj's tagIds key
 function getDisciplines()  {
