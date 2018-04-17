@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="js/awesomplete-gh-pages/awesomplete.css" />
+    <link rel="stylesheet" href="css/style.css">
+    <title>COT: Search Engine UI</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="top-row">
+          <h1 id="cot-title">
+            College Open Textbooks
+            <br>
+            <span>Driving Awareness and Adoption of Open Textbooks</span>
+         </h1>
+      </div>
+    <form id="search-fields">
+      <div class="search-field search-disciplines">
+        <label for="discipline">Discipline:</label>
+        <input name="discipline" id="disciplines" class="awesomplete" data-multiple>
+      </div>
+      <br>
+      <div class="search-field">
+        <label for="title">Title:</label>
+        <input id="title" type="text" name="title" placeholder="title of text">
+      </div>
+      <br>
+      <div class="search-field">
+        <label for="author">Author/Editor:</label>
+        <input id="author-name" type="text" name="name" placeholder="authors or editors">
+      </div>
+      <br>
+      <div class="license-ancillaries-container">
+        <div class="search-field">
+          <label for="license">License:</label>
+          <br>
+          <br>
+            <input type="text" name="license" id="license-search" placeholder="specify license">
+            <br>
+            <br>
+            <select name="license" id="license-select"></select>
+        </div>
+        <br>
+        <div class="search-field">
+          <label for="ancillaries">Ancillaries: </label>
+          <select>
+            <option value="none" class="select ancilliary-select">None</option>
+            <option value="yes" class="select ancilliary-select">Yes</option>
+            <option value="no" class="select ancilliary-select">No</option>
+          </select>
+        </div>
+        <br>
+      </div>
+      <div class="reviews-respository">
+        <div class="search-field">
+          <label for="reviews">Peer Reviewed: </label>
+          <!-- <br> -->
+          <select>
+            <option value="none" class="select peer-review-select">None</option>
+            <option value="yes" class="select peer-review-select">Yes</option>
+            <option value="no" class="select peer-review-select">No</option>
+          </select>
+        </div>
+        <br>
+        <div class="search-field">
+          <label for="repository">Repository:</label>
+          <input id="repository" type="text" name="repository">
+        </div>
+        <br>
+      </div>
+    </form>
+    <div class="button-container">
+      <input id="search-button" type="submit" value="Search">
+    </div>
+  </div>
+  <div class="display-results">
+    <ul id="list">
+      <h3>Results Display Here</h3>
+    </ul>
+  </div>
+  <script src="js/script.js"></script>
+  <script src="js/awesomplete-gh-pages/awesomplete.min.js"></script>
+
+  </body>
+</html>
