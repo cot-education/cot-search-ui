@@ -15,20 +15,20 @@ function searchBooks() {
   };
   //this log just is to double-check the actual body of the object we're sending
   console.log(JSON.stringify(searchBooksObj));
+
   fetch(baseUrl + 'search', {
     body: JSON.stringify(searchBooksObj),
     cache: 'no-cache',
     headers: {
       'content-type': 'application/json',
     },
-    method: 'POST',
+    method: 'POST'
   }).then(response => response.json())
     .then(data => {
       buildList(data);
     })
     .catch(error => console.error(error));
 }
-
 
 //kick things off when the page loads
 function init() {
@@ -130,11 +130,11 @@ function getAuthors() {
           this.input.value = name.label
         }
       });
+
       //get selected author and populate tag key in searchBookObj to POST
       authorsList.addEventListener("awesomplete-select", function(event) {
         searchBooksObj.authorIds = [event.text.value];
       });
-
     })
     .catch(error => console.error(error));
 }
@@ -152,6 +152,7 @@ function getLicences() {
       licenseListItem.value = licenses[i];
       licenseList.appendChild(licenseListItem);
   }
+
   licenseList.addEventListener('change', (item) => {
     licenseArray.push(item.target.value);
   });
