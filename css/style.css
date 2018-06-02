@@ -53,8 +53,8 @@ img {
   width: 100%;
   margin-top: 3%;
 }
-#title, #author-name, #ancillaries, #peer-reviewed, #repository {
-  width: 60%;
+[type="text"] {
+  width: 300px;
   background: #F5F5F5;
 }
 .license-ancillaries-container, .reviews-respository {
@@ -80,7 +80,7 @@ img {
   justify-content: space-between;
   margin: 1em 30%;
 }
-#search-button {
+#search-button, #clear-button {
   color: #ffffff;
   font-size: 16px;
   background: var(--orange);

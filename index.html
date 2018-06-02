@@ -3,7 +3,6 @@
   <head>
     <link rel="stylesheet" href="js/awesomplete-gh-pages/awesomplete.css" />
     <link rel="stylesheet" href="css/style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.0.4/fuse.min.js"></script>
     <title>COT: Search Engine UI</title>
   </head>
   <body>
@@ -18,7 +17,7 @@
     <form id="search-fields">
       <div class="search-field search-disciplines">
         <label for="discipline">Discipline:</label>
-        <input name="discipline" id="disciplines" class="awesomplete" data-multiple>
+        <input name="discipline" type="text" id="disciplines" class="awesomplete" data-multiple>
       </div>
       <br>
       <div class="search-field">
@@ -72,6 +71,7 @@
     </form>
     <div class="button-container">
       <input id="search-button" type="submit" value="Search">
+      <input id="clear-button" type="submit" value="Clear">
     </div>
   </div>
   <div class="display-results">
