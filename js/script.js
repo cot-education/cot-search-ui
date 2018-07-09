@@ -14,7 +14,7 @@ function searchBooks() {
     return;
   };
   //this log is just to double-check the actual body of the object we're sending
-  console.log(JSON.stringify(searchBooksObj));
+  //console.log(JSON.stringify(searchBooksObj));
   fetch(baseUrl + 'search', {
     body: JSON.stringify(searchBooksObj),
     cache: 'no-cache',
@@ -31,8 +31,6 @@ function searchBooks() {
       console.error(error);
     });
 }
-
-
 //kick things off when the page loads
 function init() {
   getTitle();
@@ -83,7 +81,6 @@ function getDisciplines()  {
       alert('Sorry, something went wrong. Please, try again later.');
       console.error(error);
     });
-}
 
 //get title from user input and populate searchBookObj's partialTitle key
 function getTitle() {
@@ -199,6 +196,30 @@ function getAncillaries() {
       searchBooksObj.hasAncillary = false;
     }
   });
+  const licenses = ["CC BY", "CC BY-NC", "CC BY-NC-ND", "CC BY-NC-SA", "CC BY-SA", "EMUCL", "GFDL", "GGPL", "OPL", "PD"]
+  const licenseList = document.getElementById('license-select');
+  const licenseSearch = document.getElementById('license-search');
+  for(let i = 0; i < licenses.length; i++) {
+    const licenseListItem = document.createElement("option");
+      licenseListItem.textContent = licenses[i];
+      licenseListItem.value = licenses[i];
+      licenseList.appendChild(licenseListItem);
+  }
+
+  licenseList.addEventListener('change', (item) => {
+    licenseArray.push(item.target.value);
+  });
+  licenseSearch.addEventListener('change', (item) => {
+    licenseArray.push(item.target.value);
+  });
+
+[licenseList, licenseSearch].forEach(license => {
+  license.addEventListener('change', (e) => {
+    if (licenseArray.length > 0) {
+      searchBooksObj.licenseCodes = licenseArray;
+    }
+  });
+})
 }
 
 //this populates/GETs the repositories. populates searchBooksObj's repositories key
