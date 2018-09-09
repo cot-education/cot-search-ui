@@ -7,7 +7,6 @@ let licenseArray = [];
 let baseUrl = `http://52.11.188.162/`;
 
 let loader = document.querySelector('.loader');
-
 //POST to /search to retrieve data
 function searchBooks() {
   //if object is empty, ask user to enter data to see results
@@ -29,7 +28,6 @@ function searchBooks() {
     .then(data => {
       buildList(data);
       loader.style.display = 'none';
-    })
     .catch(error => console.error(error));
 }
 
@@ -57,8 +55,6 @@ clearButton.addEventListener('click', () => {
   searchBooksObj = {};
   licenseArray = [];
   document.querySelectorAll('[type="text"]').forEach(input => input.value = '');
-  let resetAncillariesList = document.querySelector('#ancillaries-list');
-  let resetPeerReviewsList = document.querySelector('#peer-reviews-list');
   clear();
 });
 
