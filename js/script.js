@@ -5,7 +5,6 @@ let licenseArray = [];
 
 //the URL base with which we can concat/specify our endpoints
 const baseUrl = `http://52.11.188.162/`;
-
 //POST to /search to retrieve data
 function searchBooks() {
   //if object is empty, ask user to enter data to see results
@@ -31,8 +30,6 @@ function searchBooks() {
       console.error(error);
     });
 }
-
-
 //kick things off when the page loads
 function init() {
   getTitle();
@@ -83,8 +80,6 @@ function getDisciplines()  {
       alert('Sorry, something went wrong. Please, try again later.');
       console.error(error);
     });
-}
-
 //get title from user input and populate searchBookObj's partialTitle key
 function getTitle() {
   const title = document.querySelector('#title');
@@ -100,7 +95,6 @@ function getTitle() {
 //  with two different endpoints and be able to select the values using
 //  the awesomplete library. Since we have many more authors than editors,
 //  I will just populate the input with authors for now.
-
 //get editor from user input and populate searchBookObj's auhthorId key
 // function getEditors() {
 //   const editorsList = document.querySelector('#author-name');
@@ -199,6 +193,7 @@ function getAncillaries() {
       searchBooksObj.hasAncillary = false;
     }
   });
+
 }
 
 //this populates/GETs the repositories. populates searchBooksObj's repositories key
