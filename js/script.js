@@ -31,6 +31,12 @@ function searchBooks() {
     .then(data => {
       buildList(data);
       loader.style.display = 'none';
+      window.scroll({
+        top: 700,
+        behavior: 'smooth'
+      })
+    })
+
     .catch(error => console.error(error));
 }
 
@@ -82,7 +88,6 @@ function getDisciplines()  {
   })
   .catch(error => console.error(error));
 }
-
 
 //get title from user input and populate searchBookObj's partialTitle key
 function getTitle() {
@@ -161,9 +166,11 @@ function getAncillaries() {
   const ancillariesList = document.querySelector("#ancillaries-list");
   ancillariesList.addEventListener('change', (e) => {
     let ancillary = ancillariesList.options[ancillariesList.selectedIndex].value;
+    console.log(ancillary);
     if (ancillary === 'yes') {
      searchBooksObj.hasAncillaries = true
      searchBooksObj.hasAncillary = true
+     console.log(searchBooksObj)
     } else {
       searchBooksObj.hasAncillaries = false
       searchBooksObj.hasAncillary = false
