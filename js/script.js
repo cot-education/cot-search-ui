@@ -15,6 +15,7 @@ function searchBooks() {
   };
   //this log is just to double-check the actual body of the object we're sending
   //console.log(JSON.stringify(searchBooksObj));
+
   fetch(baseUrl + 'search', {
     body: JSON.stringify(searchBooksObj),
     cache: 'no-cache',
@@ -197,29 +198,58 @@ function getAncillaries() {
     }
   });
   const licenses = ["CC BY", "CC BY-NC", "CC BY-NC-ND", "CC BY-NC-SA", "CC BY-SA", "EMUCL", "GFDL", "GGPL", "OPL", "PD"]
+
   const licenseList = document.getElementById('license-select');
   const licenseSearch = document.getElementById('license-search');
+  // populate the license list
   for(let i = 0; i < licenses.length; i++) {
     const licenseListItem = document.createElement("option");
-      licenseListItem.textContent = licenses[i];
-      licenseListItem.value = licenses[i];
-      licenseList.appendChild(licenseListItem);
+    licenseListItem.textContent = licenses[i];
+    licenseListItem.value = licenses[i];
+    licenseList.appendChild(licenseListItem);
   }
-
+  // grab selected license from list and push to array
   licenseList.addEventListener('change', (item) => {
     licenseArray.push(item.target.value);
   });
+  // grab license typed in by user and push to array
   licenseSearch.addEventListener('change', (item) => {
     licenseArray.push(item.target.value);
   });
+  // each time a license is added seperately, make sure the array is not empty
+  // and set the add the license array to the searchBooksObject
+  [licenseList, licenseSearch].forEach(license => {
+    license.addEventListener('change', (e) => {
+      if (licenseArray.length > 0) {
+        searchBooksObj.licenseCodes = licenseArray;
+      }
+    });
+  });
+}
 
-[licenseList, licenseSearch].forEach(license => {
-  license.addEventListener('change', (e) => {
-    if (licenseArray.length > 0) {
-      searchBooksObj.licenseCodes = licenseArray;
+function getPeerReviews() {
+  const peerReview = document.querySelector('#peer-reviews');
+  peerReview.addEventListener('change', (e) => {
+    if (e.target.value === 'yes') {
+      searchBooksObj.hasReview = true;
+    } else {
+      searchBooksObj.hasReview = false;
     }
   });
-})
+}
+
+function getAncillaries() {
+  const ancillaries = document.querySelector('#ancillaries');
+  ancillaries.addEventListener('change', (e) => {
+    if (e.target.value === 'yes') {
+      searchBooksObj.hasAncillaries = true;
+      searchBooksObj.hasAncillary = true;
+    } else {
+      searchBooksObj.hasAncillaries = false;
+      searchBooksObj.hasAncillary = false;
+    }
+  });
+
 }
 
 //this populates/GETs the repositories. populates searchBooksObj's repositories key
