@@ -7,6 +7,7 @@ let licenseArray = [];
 let baseUrl = `http://52.11.188.162/`;
 
 let loader = document.querySelector('.loader');
+
 //POST to /search to retrieve data
 function searchBooks() {
   //if object is empty, ask user to enter data to see results
@@ -14,6 +15,7 @@ function searchBooks() {
     alert('Please, enter some data to see results.')
     return;
   };
+
   //this log just is to double-check the actual body of the object we're sending
   console.log(JSON.stringify(searchBooksObj));
   loader.style.display = 'block';
@@ -34,6 +36,7 @@ function searchBooks() {
         behavior: 'smooth'
       })
     })
+
     .catch(error => console.error(error));
 }
 
@@ -194,7 +197,6 @@ function getLicences() {
   licenseSearch.addEventListener('change', (item) => {
     licenseArray.push(item.target.value);
   });
-
 
   [licenseList, licenseSearch].forEach(license => {
     license.addEventListener('change', (e) => {
