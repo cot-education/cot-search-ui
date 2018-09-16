@@ -4,7 +4,9 @@ let searchBooksObj = {}
 let licenseArray = [];
 
 //the URL base with which we can concat/specify our endpoints
-const baseUrl = `http://52.11.188.162/`;
+let baseUrl = `http://52.11.188.162/`;
+
+let loader = document.querySelector('.loader');
 
 //POST to /search to retrieve data
 function searchBooks() {
@@ -13,8 +15,10 @@ function searchBooks() {
     alert('Please, enter some data to see results.')
     return;
   };
-  //this log is just to double-check the actual body of the object we're sending
-  //console.log(JSON.stringify(searchBooksObj));
+
+  //this log just is to double-check the actual body of the object we're sending
+  console.log(JSON.stringify(searchBooksObj));
+  loader.style.display = 'block';
 
   fetch(baseUrl + 'search', {
     body: JSON.stringify(searchBooksObj),
@@ -22,16 +26,14 @@ function searchBooks() {
     headers: {
       'content-type': 'application/json',
     },
-    method: 'POST',
+    method: 'POST'
   }).then(response => response.json())
     .then(data => {
       buildList(data);
-    })
-    .catch(error => {
-      alert('Sorry, something went wrong. Please, try again later.');
-      console.error(error);
-    });
+      loader.style.display = 'none';
+    .catch(error => console.error(error));
 }
+
 //kick things off when the page loads
 function init() {
   getTitle();
@@ -39,8 +41,8 @@ function init() {
   getDisciplines();
   // getEditors();
   getAuthors();
-  getPeerReviews();
-  getAncillaries();
+  getAncillaries()
+  getPeerReviews()
   getRepositories();
 }
 
@@ -78,10 +80,9 @@ function getDisciplines()  {
       searchBooksObj.tagIds = [event.text.value];
     });
   })
-  .catch(error => {
-      alert('Sorry, something went wrong. Please, try again later.');
-      console.error(error);
-    });
+  .catch(error => console.error(error));
+}
+
 
 //get title from user input and populate searchBookObj's partialTitle key
 function getTitle() {
@@ -97,7 +98,7 @@ function getTitle() {
 //  As of right now, I'm not sure how I can populate the same text input
 //  with two different endpoints and be able to select the values using
 //  the awesomplete library. Since we have many more authors than editors,
-//  I will just populate the input with authors for now.
+//  I will just populate the input with authors.
 
 //get editor from user input and populate searchBookObj's auhthorId key
 // function getEditors() {
@@ -134,6 +135,7 @@ function getAuthors() {
           this.input.value = name.label
         }
       });
+
       //get selected author and populate tag key in searchBookObj to POST
       authorsList.addEventListener("awesomplete-select", function(event) {
         searchBooksObj.authorIds = [event.text.value];
@@ -142,114 +144,60 @@ function getAuthors() {
     .catch(error => console.error(error));
 }
 
+function getPeerReviews() {
+  const peerReviewsList = document.querySelector("#peer-reviews-list");
+  peerReviewsList.addEventListener('change', (e) => {
+    let peerReview = peerReviewsList.options[peerReviewsList.selectedIndex].value;
+    console.log(peerReview);
+    if (peerReview === 'yes') {
+     searchBooksObj.hasReview = true
+     console.log(searchBooksObj)
+    } else {
+      searchBooksObj.hasReview = false
+    }
+  });
+}
+function getAncillaries() {
+  const ancillariesList = document.querySelector("#ancillaries-list");
+  ancillariesList.addEventListener('change', (e) => {
+    let ancillary = ancillariesList.options[ancillariesList.selectedIndex].value;
+    if (ancillary === 'yes') {
+     searchBooksObj.hasAncillaries = true
+     searchBooksObj.hasAncillary = true
+    } else {
+      searchBooksObj.hasAncillaries = false
+      searchBooksObj.hasAncillary = false
+    }
+  });
+}
 //this both lists license values and gets custom license search.
 //populates searchBooksObj's licensesCodes key
 function getLicences() {
   //these are the licenses provided from the spec that the user can select in a dropdown format
-  const licenses = ["None", "CC BY", "CC BY-NC", "CC BY-NC-ND", "CC BY-NC-SA", "CC BY-SA", "EMUCL", "GFDL", "GGPL", "OPL", "PD"]
-  const licenseList = document.getElementById('license-select');
-  const licenseSearch = document.getElementById('license-search');
-  // populate the license list
-  for(let i = 0; i < licenses.length; i++) {
-    const licenseListItem = document.createElement("option");
-    licenseListItem.textContent = licenses[i];
-    licenseListItem.value = licenses[i];
-    licenseList.appendChild(licenseListItem);
-  }
-  // grab selected license from list and push to array
-  licenseList.addEventListener('change', (item) => {
-    licenseArray.push(item.target.value);
-  });
-  // grab license typed in by user and push to array
-  licenseSearch.addEventListener('change', (item) => {
-    licenseArray.push(item.target.value);
-  });
-  // each time a license is added seperately, make sure the array is not empty
-  // and set the add the license array to the searchBooksObject
-  [licenseList, licenseSearch].forEach(license => {
-    license.addEventListener('change', (e) => {
-      if (licenseArray.length > 0) {
-        searchBooksObj.licenseCodes = licenseArray;
-      }
-    });
-  });
-}
-
-function getPeerReviews() {
-  const peerReview = document.querySelector('#peer-reviews');
-  peerReview.addEventListener('change', (e) => {
-    if (e.target.value === 'yes') {
-      searchBooksObj.hasReview = true;
-    } else {
-      searchBooksObj.hasReview = false;
-    }
-  });
-}
-
-function getAncillaries() {
-  const ancillaries = document.querySelector('#ancillaries');
-  ancillaries.addEventListener('change', (e) => {
-    if (e.target.value === 'yes') {
-      searchBooksObj.hasAncillaries = true;
-      searchBooksObj.hasAncillary = true;
-    } else {
-      searchBooksObj.hasAncillaries = false;
-      searchBooksObj.hasAncillary = false;
-    }
-  });
   const licenses = ["CC BY", "CC BY-NC", "CC BY-NC-ND", "CC BY-NC-SA", "CC BY-SA", "EMUCL", "GFDL", "GGPL", "OPL", "PD"]
-
   const licenseList = document.getElementById('license-select');
   const licenseSearch = document.getElementById('license-search');
-  // populate the license list
   for(let i = 0; i < licenses.length; i++) {
     const licenseListItem = document.createElement("option");
-    licenseListItem.textContent = licenses[i];
-    licenseListItem.value = licenses[i];
-    licenseList.appendChild(licenseListItem);
+      licenseListItem.textContent = licenses[i];
+      licenseListItem.value = licenses[i];
+      licenseList.appendChild(licenseListItem);
   }
-  // grab selected license from list and push to array
+
   licenseList.addEventListener('change', (item) => {
     licenseArray.push(item.target.value);
   });
-  // grab license typed in by user and push to array
   licenseSearch.addEventListener('change', (item) => {
     licenseArray.push(item.target.value);
   });
-  // each time a license is added seperately, make sure the array is not empty
-  // and set the add the license array to the searchBooksObject
+
   [licenseList, licenseSearch].forEach(license => {
     license.addEventListener('change', (e) => {
       if (licenseArray.length > 0) {
         searchBooksObj.licenseCodes = licenseArray;
       }
     });
-  });
-}
-
-function getPeerReviews() {
-  const peerReview = document.querySelector('#peer-reviews');
-  peerReview.addEventListener('change', (e) => {
-    if (e.target.value === 'yes') {
-      searchBooksObj.hasReview = true;
-    } else {
-      searchBooksObj.hasReview = false;
-    }
-  });
-}
-
-function getAncillaries() {
-  const ancillaries = document.querySelector('#ancillaries');
-  ancillaries.addEventListener('change', (e) => {
-    if (e.target.value === 'yes') {
-      searchBooksObj.hasAncillaries = true;
-      searchBooksObj.hasAncillary = true;
-    } else {
-      searchBooksObj.hasAncillaries = false;
-      searchBooksObj.hasAncillary = false;
-    }
-  });
-
+  })
 }
 
 //this populates/GETs the repositories. populates searchBooksObj's repositories key
