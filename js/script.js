@@ -175,11 +175,9 @@ function getAncillaries() {
   const ancillariesList = document.querySelector("#ancillaries-list");
   ancillariesList.addEventListener('change', (e) => {
     let ancillary = ancillariesList.options[ancillariesList.selectedIndex].value;
-    // console.log(ancillary);
     if (ancillary === 'yes') {
      searchBooksObj.hasAncillaries = true
      searchBooksObj.hasAncillary = true
-     // console.log(searchBooksObj)
     } else {
       searchBooksObj.hasAncillaries = false
       searchBooksObj.hasAncillary = false
