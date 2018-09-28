@@ -1,3 +1,4 @@
+
 $(document).ready(function() {
 //our search object
 let searchBooksObj = {}
@@ -155,7 +156,7 @@ function getPeerReviews() {
     }
   });
 }
-
+  
 function getAncillaries() {
   const ancillariesList = document.querySelector("#ancillaries-list");
   ancillariesList.addEventListener('change', (e) => {
@@ -169,7 +170,6 @@ function getAncillaries() {
     }
   });
 }
-
 let licenseArr = []
 searchBooksObj.licenseCodes = licenseArr;
 //populates searchBooksObj's licensesCodes key
