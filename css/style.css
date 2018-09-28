@@ -1,0 +1,43 @@
+.container {
+  max-width: 960px;
+}
+[type="text"] {
+  background: #F5F5F5;
+}
+.awesomplete {
+  width: 100%;
+}
+.search-field {
+  margin-bottom: 16px;
+}
+#clear-button {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+
+  display: none;
+}
+#clear-button:hover {
+background-color: #5a6268;
+border-color: #5a6268;
+}
+header > h1 {
+  color: #0000CD;
+}
+
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  margin: auto;
+  display: none;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
