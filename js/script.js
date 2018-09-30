@@ -1,4 +1,3 @@
-
 $(document).ready(function() {
 //our search object
 let searchBooksObj = {}
@@ -21,7 +20,6 @@ function searchBooks() {
   //this log just is to double-check the actual body of the object we're sending
   console.log(JSON.stringify(searchBooksObj));
   loader.style.display = 'block';
-
   fetch(baseUrl + 'search', {
     body: JSON.stringify(searchBooksObj),
     cache: 'no-cache',
@@ -60,20 +58,27 @@ searchButton.addEventListener("click", () => {
   searchBooks();
   clear();
 });
+
 //clear input text fields and clear object
 const clearButton = document.getElementById('clear-button');
 clearButton.addEventListener('click', () => {
+  getLicences();
+  getDisciplines();
+  getRepositories();
+  $('#disciplines').multiselect('deselectAll');
+  $('#license-select').multiselect('refresh');
+  $('#repository').multiselect('deselectAll');
   searchBooksObj = {};
   licenseArray = [];
+  searchBooksObj.tagIds = [];
   document.querySelectorAll('[type="text"]').forEach(input => input.value = '');
   clear();
 });
 
-let arr = []
-searchBooksObj.tagIds = arr;
+let disciplineArr = []
+searchBooksObj.tagIds = disciplineArr;
 //this populates/GETs disciplines. populate searchBooksObj's tagIds key
 function getDisciplines()  {
-  // $('#disciplines').multiselect();
   $('#disciplines').multiselect({
     includeSelectAllOption: true,
     buttonText: function(options, select) {
@@ -81,32 +86,19 @@ function getDisciplines()  {
     },
     onChange: function(option, checked, select) {
       $(option).each(function(index, id) {
-        arr.push(id.value);
+        disciplineArr.push(id.value);
       });
-      searchBooksObj.tagIds = arr;
-      console.log(searchBooksObj.tagIds);
+      searchBooksObj.tagIds = disciplineArr;
     }
   });
-  // const disciplineList = document.querySelector('#disciplines');
   fetch(baseUrl + 'tag')
     .then(disciplineResponse => disciplineResponse.json())
     .then(disciplines => {
-      // disciplines.forEach(discipline => {
-        // let option = document.createElement('option');
-        // option.value = discipline.id;
-        // option.text = discipline.name;
-        // disciplineList.appendChild(option);
-      // });
       let data = disciplines.map(discipline => {
         return {label: discipline.name, title: discipline.name, value: discipline.id};
       });
       // programmatically add data to select list using multiselect library
-
       $('#disciplines').multiselect('dataprovider', data);
-
-      // disciplineList.addEventListener('change', item => {
-      //   searchBooksObj.tagIds = [item.target.value]
-      // });
   })
   .catch(error => console.error(error));
 }
@@ -134,7 +126,6 @@ function getAuthors() {
           this.input.value = name.label
         }
       });
-
       //get selected author and populate tag key in searchBookObj to POST
       authorsList.addEventListener("awesomplete-select", function(event) {
         searchBooksObj.authorIds = [event.text.value];
@@ -147,16 +138,14 @@ function getPeerReviews() {
   const peerReviewsList = document.querySelector("#peer-reviews-list");
   peerReviewsList.addEventListener('change', (e) => {
     let peerReview = peerReviewsList.options[peerReviewsList.selectedIndex].value;
-    console.log(peerReview);
     if (peerReview === 'yes') {
      searchBooksObj.hasReview = true
-     console.log(searchBooksObj)
     } else {
       searchBooksObj.hasReview = false
     }
   });
 }
-  
+
 function getAncillaries() {
   const ancillariesList = document.querySelector("#ancillaries-list");
   ancillariesList.addEventListener('change', (e) => {
@@ -170,6 +159,7 @@ function getAncillaries() {
     }
   });
 }
+
 let licenseArr = []
 searchBooksObj.licenseCodes = licenseArr;
 //populates searchBooksObj's licensesCodes key
@@ -186,28 +176,6 @@ function getLicences() {
     licenseList.appendChild(licenseListItem);
   }
 
-  // let allLicenses = [...licenseList].map((license) => {
-  //   if (license.value !== 'All') {
-  //     return license.value
-  //   }
-  // });
-  // filter method was returning the entire <option> element
-  // map method filtered correctly, but included an undefined value
-  // so, I am splicing out that undefined value to get the proper array.
-  // allLicenses.splice(0, 1)
-
-  // searchBooksObj.licenseCodes = allLicenses
-  // searchBooksObj.licenseCodes = allLicenses;
-  // licenseList.addEventListener('change', item => {
-  //   if (item.target.value === 'All') {
-  //     searchBooksObj.licenseCodes = allLicenses
-  //   } else {
-  //     searchBooksObj.licenseCodes = [item.target.value];
-  //   }
-  // });
-
-
-
   $('#license-select').multiselect({
     includeSelectAllOption: true,
     buttonText: function(options, select) {
@@ -221,6 +189,9 @@ function getLicences() {
     },
     onSelectAll: function() {
       searchBooksObj.licenseCodes = $('#license-select').val();
+    },
+    onDeselectAll: function() {
+      console.log('isdf')
     }
   });
 }
@@ -245,33 +216,10 @@ function getRepositories() {
       searchBooksObj.repositoryIds = $('#repository').val();
     }
   });
-  // const repositoryList = document.querySelector('#repository');
+
   fetch(baseUrl + 'repositories')
     .then(response => response.json())
     .then(repositories => {
-      // repositories.forEach(repository => {
-      //   const repositoryListItem = document.createElement("option");
-      //   repositoryListItem.textContent = repository.name;
-      //   repositoryListItem.value = repository.id;
-      //   repositoryList.appendChild(repositoryListItem);
-      // });
-
-      // let allRepositories = [...repositoryList].map(item => {
-      //   if (item.value !== 'all') {
-      //     return item.value;
-      //   }
-      // });
-      // // splice first value since it can't be included in object to POST
-      // allRepositories.splice(0, 1)
-      // searchBooksObj.repositoryIds = allRepositories;
-
-      // repositoryList.addEventListener('change', item => {
-      //   if (item.target.value === 'all') {
-      //     searchBooksObj.repositoryIds = allRepositories;
-      //   } else {
-      //     searchBooksObj.repositoryIds = [item.target.value];
-      //   }
-      // })
       let data = repositories.map(repositories => {
         return {label: repositories.name, title: repositories.name, value: repositories.id};
       });
