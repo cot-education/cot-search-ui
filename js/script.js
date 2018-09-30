@@ -1,3 +1,5 @@
+
+$(document).ready(function() {
 //our search object
 let searchBooksObj = {}
 //array for inputting and deleting licenses
@@ -43,14 +45,14 @@ function searchBooks() {
 //kick things off when the page loads
 function init() {
   getTitle();
-  getLicences();
-  getDisciplines();
-  // getEditors();
   getAuthors();
   getAncillaries()
   getPeerReviews()
-  getRepositories();
 }
+  // call these outside of init() in order to use multiselect library
+  getLicences();
+  getDisciplines();
+  getRepositories();
 
 //invoke searchBooks and send POST request
 const searchButton = document.getElementById('search-button');
@@ -67,33 +69,44 @@ clearButton.addEventListener('click', () => {
   clear();
 });
 
+let arr = []
+searchBooksObj.tagIds = arr;
 //this populates/GETs disciplines. populate searchBooksObj's tagIds key
 function getDisciplines()  {
-  const disciplineList = document.querySelector('#disciplines');
+  // $('#disciplines').multiselect();
+  $('#disciplines').multiselect({
+    includeSelectAllOption: true,
+    buttonText: function(options, select) {
+      return 'Select one or more';
+    },
+    onChange: function(option, checked, select) {
+      $(option).each(function(index, id) {
+        arr.push(id.value);
+      });
+      searchBooksObj.tagIds = arr;
+      console.log(searchBooksObj.tagIds);
+    }
+  });
+  // const disciplineList = document.querySelector('#disciplines');
   fetch(baseUrl + 'tag')
     .then(disciplineResponse => disciplineResponse.json())
     .then(disciplines => {
-      disciplines.forEach(discipline => {
-        let option = document.createElement('option');
-        option.value = discipline.id;
-        option.text = discipline.name;
-        disciplineList.appendChild(option);
+      // disciplines.forEach(discipline => {
+        // let option = document.createElement('option');
+        // option.value = discipline.id;
+        // option.text = discipline.name;
+        // disciplineList.appendChild(option);
+      // });
+      let data = disciplines.map(discipline => {
+        return {label: discipline.name, title: discipline.name, value: discipline.id};
       });
-      disciplineList.addEventListener('change', item => {
-        searchBooksObj.tagIds = [item.target.value]
-      });
-    // const lists = disciplines.map((i) => [i.name, i.id]);
-    //use awesomplete js library to dynamically list tags
-    //   new Awesomplete(disciplineList, {
-    //     list: lists,
-    //     replace: function(name) {
-    //      this.input.value = name.label
-    //   }
-    // });
-    //get selected tag and populate tag key in searchBookObj to POST
-    // disciplineList.addEventListener("awesomplete-select", function (event) {
-    //   searchBooksObj.tagIds = [event.text.value];
-    // });
+      // programmatically add data to select list using multiselect library
+
+      $('#disciplines').multiselect('dataprovider', data);
+
+      // disciplineList.addEventListener('change', item => {
+      //   searchBooksObj.tagIds = [item.target.value]
+      // });
   })
   .catch(error => console.error(error));
 }
@@ -107,34 +120,6 @@ function getTitle() {
     }
   });
 }
-
-//  Anthony's Notes:
-//  As of right now, I'm not sure how I can populate the same text input
-//  with two different endpoints and be able to select the values using
-//  the awesomplete library. Since we have many more authors than editors,
-//  I will just populate the input with authors.
-
-//get editor from user input and populate searchBookObj's auhthorId key
-// function getEditors() {
-//   const editorsList = document.querySelector('#author-name');
-//   fetch(baseUrl + 'editors')
-//     .then(response => response.json())
-//     .then(editors => {
-//       const lists = editors.map((i) => [i.name, i.id]);
-//       //use awesomplete js library to dynamically list editors
-//       new Awesomplete(editorsList, {
-//         list: lists,
-//         replace: function(name) {
-//           this.input.value = name.label
-//         }
-//       });
-//       //get selected editor and populate tag key in searchBookObj to POST
-//       editorsList.addEventListener("awesomplete-select", function(event) {
-//         searchBooksObj.editorIds = [event.text.value];
-//       });
-//     })
-//     .catch(error => console.error(error));
-// }
 
 function getAuthors() {
   const authorsList = document.querySelector('#author-name');
@@ -171,28 +156,29 @@ function getPeerReviews() {
     }
   });
 }
+  
 function getAncillaries() {
   const ancillariesList = document.querySelector("#ancillaries-list");
   ancillariesList.addEventListener('change', (e) => {
     let ancillary = ancillariesList.options[ancillariesList.selectedIndex].value;
-    // console.log(ancillary);
     if (ancillary === 'yes') {
      searchBooksObj.hasAncillaries = true
      searchBooksObj.hasAncillary = true
-     // console.log(searchBooksObj)
     } else {
       searchBooksObj.hasAncillaries = false
       searchBooksObj.hasAncillary = false
     }
   });
 }
-//this both lists license values and gets custom license search.
+let licenseArr = []
+searchBooksObj.licenseCodes = licenseArr;
 //populates searchBooksObj's licensesCodes key
 function getLicences() {
+
   //these are the licenses provided from the spec that the user can select in a dropdown format
   const licenses = ["All", "CC BY", "CC BY-NC", "CC BY-NC-ND", "CC BY-NC-SA", "CC BY-SA", "EMUCL", "GFDL", "GGPL", "OPL", "PD"]
   const licenseList = document.getElementById('license-select');
-  // const licenseSearch = document.getElementById('license-search');
+
   for(let i = 0; i < licenses.length; i++) {
     const licenseListItem = document.createElement("option");
     licenseListItem.textContent = licenses[i];
@@ -200,83 +186,96 @@ function getLicences() {
     licenseList.appendChild(licenseListItem);
   }
 
-  let allLicenses = [...licenseList].map((license) => {
-    if (license.value !== 'All') {
-      return license.value
-    }
-  });
+  // let allLicenses = [...licenseList].map((license) => {
+  //   if (license.value !== 'All') {
+  //     return license.value
+  //   }
+  // });
   // filter method was returning the entire <option> element
   // map method filtered correctly, but included an undefined value
   // so, I am splicing out that undefined value to get the proper array.
-  allLicenses.splice(0, 1)
-  // console.log(allLicenses);
-  searchBooksObj.licenseCodes = allLicenses
-  searchBooksObj.licenseCodes = allLicenses;
-  licenseList.addEventListener('change', item => {
-    if (item.target.value === 'All') {
-      searchBooksObj.licenseCodes = allLicenses
-    } else {
-      searchBooksObj.licenseCodes = [item.target.value];
-    }
-  });
-  // licenseList.addEventListener('change', (item) => {
-  //   licenseArray.push(item.target.value);
-  // });
-  // licenseSearch.addEventListener('change', (item) => {
-  //   licenseArray.push(item.target.value);
+  // allLicenses.splice(0, 1)
+
+  // searchBooksObj.licenseCodes = allLicenses
+  // searchBooksObj.licenseCodes = allLicenses;
+  // licenseList.addEventListener('change', item => {
+  //   if (item.target.value === 'All') {
+  //     searchBooksObj.licenseCodes = allLicenses
+  //   } else {
+  //     searchBooksObj.licenseCodes = [item.target.value];
+  //   }
   // });
 
-  // [licenseList, licenseSearch].forEach(license => {
-  //   license.addEventListener('change', (e) => {
-  //     if (licenseArray.length > 0) {
-  //       searchBooksObj.licenseCodes = licenseArray;
-  //     }
-  //   });
-  // })
+
+
+  $('#license-select').multiselect({
+    includeSelectAllOption: true,
+    buttonText: function(options, select) {
+      return 'Select one or more';
+    },
+    onChange: function(option, checked, select) {
+      $(option).each(function(index, id) {
+        licenseArr.push(id.value);
+      });
+      searchBooksObj.licenseCodes = licenseArr;
+    },
+    onSelectAll: function() {
+      searchBooksObj.licenseCodes = $('#license-select').val();
+    }
+  });
 }
+
+let respositoryArr = []
+searchBooksObj.repositoryIds
 
 //this populates/GETs the repositories. populates searchBooksObj's repositories key
 function getRepositories() {
-  const repositoryList = document.querySelector('#repository');
+  $('#repository').multiselect({
+    includeSelectAllOption: true,
+    buttonText: function(options, select) {
+      return 'Select one or more';
+    },
+    onChange: function(option, checked, select) {
+      $(option).each(function(index, id) {
+        respositoryArr.push(id.value);
+      });
+      searchBooksObj.repositoryIds = respositoryArr;
+    },
+    onSelectAll: function() {
+      searchBooksObj.repositoryIds = $('#repository').val();
+    }
+  });
+  // const repositoryList = document.querySelector('#repository');
   fetch(baseUrl + 'repositories')
     .then(response => response.json())
     .then(repositories => {
-      repositories.forEach(repository => {
-        const repositoryListItem = document.createElement("option");
-        repositoryListItem.textContent = repository.name;
-        repositoryListItem.value = repository.id;
-        repositoryList.appendChild(repositoryListItem);
-      });
+      // repositories.forEach(repository => {
+      //   const repositoryListItem = document.createElement("option");
+      //   repositoryListItem.textContent = repository.name;
+      //   repositoryListItem.value = repository.id;
+      //   repositoryList.appendChild(repositoryListItem);
+      // });
 
-      let allRepositories = [...repositoryList].map(item => {
-        if (item.value !== 'all') {
-          return item.value;
-        }
-      });
-      // splice first value since it can't be included in object to POST
-      allRepositories.splice(0, 1)
-      searchBooksObj.repositoryIds = allRepositories;
-
-      repositoryList.addEventListener('change', item => {
-        if (item.target.value === 'all') {
-          searchBooksObj.repositoryIds = allRepositories;
-        } else {
-          searchBooksObj.repositoryIds = [item.target.value];
-        }
-      })
-      // const lists = repositories.map((i) => [i.name, i.id]);
-      // //use awesomplete js library to dynamically list repositories
-      // new Awesomplete(repository, {
-      //   list: lists,
-      //   replace: function(name) {
-      //     this.input.value = name.label
+      // let allRepositories = [...repositoryList].map(item => {
+      //   if (item.value !== 'all') {
+      //     return item.value;
       //   }
       // });
-      // repository.addEventListener("awesomplete-select", function(event) {
-      //   if (event.target.value !== '') {
-      //     searchBooksObj.repositoryIds = [event.text.value];
+      // // splice first value since it can't be included in object to POST
+      // allRepositories.splice(0, 1)
+      // searchBooksObj.repositoryIds = allRepositories;
+
+      // repositoryList.addEventListener('change', item => {
+      //   if (item.target.value === 'all') {
+      //     searchBooksObj.repositoryIds = allRepositories;
+      //   } else {
+      //     searchBooksObj.repositoryIds = [item.target.value];
       //   }
-      // });
+      // })
+      let data = repositories.map(repositories => {
+        return {label: repositories.name, title: repositories.name, value: repositories.id};
+      });
+      $('#repository').multiselect('dataprovider', data)
     })
     .catch(error => console.error(error));
 }
@@ -300,9 +299,11 @@ function buildList(searchResults) {
   });
 }
 
-
 //this just erases the unordered list when the user makes multiple searches.
 function clear() {
   document.getElementById('list').innerHTML = "";
 };
+
 document.addEventListener("DOMContentLoaded", init);
+
+}); //end jquery

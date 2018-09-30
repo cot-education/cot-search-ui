@@ -2,7 +2,8 @@
 <html>
   <head>
     <link rel="stylesheet" href="js/awesomplete-gh-pages/awesomplete.css" />
-    <link rel="stylesheet" type="text/css" href="js/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="js/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css" type="text/css"/>
     <link rel="stylesheet" href="css/style.css">
     <title>COT: Search Engine UI</title>
   </head>
@@ -17,7 +18,7 @@
         <div class="search-field search-disciplines">
           <label for="discipline">Discipline:</label>
           <br>
-          <select id="disciplines" class="form-control"></select>
+          <select id="disciplines" class="form-control" multiple="multiple"></select>
           <!-- <input name="discipline" type="text" id="disciplines" class="awesomplete form-control" data-multiple> -->
         </div>
         <div class="search-field">
@@ -34,7 +35,7 @@
             <label for="license">License:</label>
             <br>
             <!-- <input type="text" name="license" id="license-search" placeholder="specify license" class="form-control"> -->
-            <select name="license" id="license-select" class="form-control"></select>
+            <select name="license" id="license-select" class="form-control" multiple="multiple"> </select>
           </div>
           <div class="search-field">
             <label for="ancillaries">Ancillaries: </label>
@@ -58,8 +59,8 @@
           <div class="search-field">
             <label for="repository">Repository:</label>
             <br>
-            <select name="repository" id="repository" class="form-control">
-              <option value="all">All</option>
+            <select name="repository" id="repository" class="form-control" multiple="multiple">
+              <!-- <option value="all">All</option> -->
             </select>
             <!-- <input id="repository" type="text" name="repository" class="form-control"> -->
           </div>
@@ -81,7 +82,12 @@
       </div>
     </section>
   </div>
+  <script src="js/jquery-3.3.1.min.js"></script>
   <script src="js/script.js"></script>
-    <script src="js/awesomplete-gh-pages/awesomplete.min.js"></script>
+  <script src="js/awesomplete-gh-pages/awesomplete.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js"></script>
+    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.5.7/js/mdb.min.js"></script> -->
+    <!-- <script type="text/javascript" src="js/bootstrap.min.js"></script> -->
   </body>
 </html>
