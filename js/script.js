@@ -175,9 +175,11 @@ function getAncillaries() {
   const ancillariesList = document.querySelector("#ancillaries-list");
   ancillariesList.addEventListener('change', (e) => {
     let ancillary = ancillariesList.options[ancillariesList.selectedIndex].value;
+    // console.log(ancillary);
     if (ancillary === 'yes') {
      searchBooksObj.hasAncillaries = true
      searchBooksObj.hasAncillary = true
+     // console.log(searchBooksObj)
     } else {
       searchBooksObj.hasAncillaries = false
       searchBooksObj.hasAncillary = false
@@ -235,17 +237,33 @@ function getLicences() {
 
 //this populates/GETs the repositories. populates searchBooksObj's repositories key
 function getRepositories() {
-  const respositoryList = document.querySelector('#repository');
+  const repositoryList = document.querySelector('#repository');
   fetch(baseUrl + 'repositories')
     .then(response => response.json())
     .then(repositories => {
-      repositories.forEach(respository => {
+      repositories.forEach(repository => {
         const repositoryListItem = document.createElement("option");
-        repositoryListItem.textContent = respository.name;
-        repositoryListItem.value = respository.name;
-        respositoryList.appendChild(repositoryListItem);
+        repositoryListItem.textContent = repository.name;
+        repositoryListItem.value = repository.id;
+        repositoryList.appendChild(repositoryListItem);
       });
 
+      let allRepositories = [...repositoryList].map(item => {
+        if (item.value !== 'all') {
+          return item.value;
+        }
+      });
+      // splice first value since it can't be included in object to POST
+      allRepositories.splice(0, 1)
+      searchBooksObj.repositoryIds = allRepositories;
+
+      repositoryList.addEventListener('change', item => {
+        if (item.target.value === 'all') {
+          searchBooksObj.repositoryIds = allRepositories;
+        } else {
+          searchBooksObj.repositoryIds = [item.target.value];
+        }
+      })
       // const lists = repositories.map((i) => [i.name, i.id]);
       // //use awesomplete js library to dynamically list repositories
       // new Awesomplete(repository, {
