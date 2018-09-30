@@ -17,7 +17,8 @@
         <div class="search-field search-disciplines">
           <label for="discipline">Discipline:</label>
           <br>
-          <input name="discipline" type="text" id="disciplines" class="awesomplete form-control" data-multiple>
+          <select id="disciplines" class="form-control"></select>
+          <!-- <input name="discipline" type="text" id="disciplines" class="awesomplete form-control" data-multiple> -->
         </div>
         <div class="search-field">
           <label for="title">Title:</label>
@@ -32,14 +33,14 @@
           <div class="search-field">
             <label for="license">License:</label>
             <br>
-            <input type="text" name="license" id="license-search" placeholder="specify license" class="form-control">
+            <!-- <input type="text" name="license" id="license-search" placeholder="specify license" class="form-control"> -->
             <br>
-            <select name="license" id="license-select"></select>
+            <select name="license" id="license-select" class="form-control"></select>
           </div>
           <div class="search-field">
             <label for="ancillaries">Ancillaries: </label>
             <select id="ancillaries-list">
-              <option value="none" class="select ancilliary-select">None</option>
+              <option value="none" class="select ancilliary-select"></option>
               <option value="yes" class="select ancilliary-select">Yes</option>
               <option value="no" class="select ancilliary-select">No</option>
             </select>
@@ -47,7 +48,7 @@
           <div class="search-field">
             <label for="reviews">Peer Reviewed: </label>
             <select id="peer-reviews-list">
-              <option value="none" class="select peer-review-select">None</option>
+              <option value="none" class="select peer-review-select"></option>
               <option value="yes" class="select peer-review-select">Yes</option>
               <option value="no" class="select peer-review-select">No</option>
             </select>
@@ -57,7 +58,9 @@
           <br>
           <div class="search-field">
             <label for="repository">Repository:</label>
-            <input id="repository" type="text" name="repository" class="form-control">
+            <br>
+            <select name="repository" id="repository" class="form-control"></select>
+            <!-- <input id="repository" type="text" name="repository" class="form-control"> -->
           </div>
           <br>
         </div>

@@ -73,18 +73,27 @@ function getDisciplines()  {
   fetch(baseUrl + 'tag')
     .then(disciplineResponse => disciplineResponse.json())
     .then(disciplines => {
-      const lists = disciplines.map((i) => [i.name, i.id]  );
-      //use awesomplete js library to dynamically list tags
-      new Awesomplete(disciplineList, {
-        list: lists,
-        replace: function(name) {
-         this.input.value = name.label
-      }
-    });
+      disciplines.forEach(discipline => {
+        let option = document.createElement('option');
+        option.value = discipline.id;
+        option.text = discipline.name;
+        disciplineList.appendChild(option);
+      });
+      disciplineList.addEventListener('change', item => {
+        searchBooksObj.tagIds = [item.target.value]
+      });
+    // const lists = disciplines.map((i) => [i.name, i.id]);
+    //use awesomplete js library to dynamically list tags
+    //   new Awesomplete(disciplineList, {
+    //     list: lists,
+    //     replace: function(name) {
+    //      this.input.value = name.label
+    //   }
+    // });
     //get selected tag and populate tag key in searchBookObj to POST
-    disciplineList.addEventListener("awesomplete-select", function (event) {
-      searchBooksObj.tagIds = [event.text.value];
-    });
+    // disciplineList.addEventListener("awesomplete-select", function (event) {
+    //   searchBooksObj.tagIds = [event.text.value];
+    // });
   })
   .catch(error => console.error(error));
 }
@@ -166,11 +175,9 @@ function getAncillaries() {
   const ancillariesList = document.querySelector("#ancillaries-list");
   ancillariesList.addEventListener('change', (e) => {
     let ancillary = ancillariesList.options[ancillariesList.selectedIndex].value;
-    console.log(ancillary);
     if (ancillary === 'yes') {
      searchBooksObj.hasAncillaries = true
      searchBooksObj.hasAncillary = true
-     console.log(searchBooksObj)
     } else {
       searchBooksObj.hasAncillaries = false
       searchBooksObj.hasAncillary = false
@@ -181,51 +188,77 @@ function getAncillaries() {
 //populates searchBooksObj's licensesCodes key
 function getLicences() {
   //these are the licenses provided from the spec that the user can select in a dropdown format
-  const licenses = ["CC BY", "CC BY-NC", "CC BY-NC-ND", "CC BY-NC-SA", "CC BY-SA", "EMUCL", "GFDL", "GGPL", "OPL", "PD"]
+  const licenses = ["All", "CC BY", "CC BY-NC", "CC BY-NC-ND", "CC BY-NC-SA", "CC BY-SA", "EMUCL", "GFDL", "GGPL", "OPL", "PD"]
   const licenseList = document.getElementById('license-select');
-  const licenseSearch = document.getElementById('license-search');
+  // const licenseSearch = document.getElementById('license-search');
   for(let i = 0; i < licenses.length; i++) {
     const licenseListItem = document.createElement("option");
-      licenseListItem.textContent = licenses[i];
-      licenseListItem.value = licenses[i];
-      licenseList.appendChild(licenseListItem);
+    licenseListItem.textContent = licenses[i];
+    licenseListItem.value = licenses[i];
+    licenseList.appendChild(licenseListItem);
   }
 
-  licenseList.addEventListener('change', (item) => {
-    licenseArray.push(item.target.value);
+  let allLicenses = [...licenseList].map((license) => {
+    if (license.value !== 'All') {
+      return license.value
+    }
   });
-  licenseSearch.addEventListener('change', (item) => {
-    licenseArray.push(item.target.value);
+  // filter method was returning the entire <option> element
+  // map method filtered correctly, but included an undefined value
+  // so, I am splicing out that undefined value to get the proper array.
+  allLicenses.splice(0, 1)
+  // console.log(allLicenses);
+  searchBooksObj.licenseCodes = allLicenses
+  searchBooksObj.licenseCodes = allLicenses;
+  licenseList.addEventListener('change', item => {
+    if (item.target.value === 'All') {
+      searchBooksObj.licenseCodes = allLicenses
+    } else {
+      searchBooksObj.licenseCodes = [item.target.value];
+    }
   });
+  // licenseList.addEventListener('change', (item) => {
+  //   licenseArray.push(item.target.value);
+  // });
+  // licenseSearch.addEventListener('change', (item) => {
+  //   licenseArray.push(item.target.value);
+  // });
 
-  [licenseList, licenseSearch].forEach(license => {
-    license.addEventListener('change', (e) => {
-      if (licenseArray.length > 0) {
-        searchBooksObj.licenseCodes = licenseArray;
-      }
-    });
-  })
+  // [licenseList, licenseSearch].forEach(license => {
+  //   license.addEventListener('change', (e) => {
+  //     if (licenseArray.length > 0) {
+  //       searchBooksObj.licenseCodes = licenseArray;
+  //     }
+  //   });
+  // })
 }
 
 //this populates/GETs the repositories. populates searchBooksObj's repositories key
 function getRepositories() {
-  const respository = document.querySelector('#repository');
+  const respositoryList = document.querySelector('#repository');
   fetch(baseUrl + 'repositories')
     .then(response => response.json())
     .then(repositories => {
-      const lists = repositories.map((i) => [i.name, i.id]);
-      //use awesomplete js library to dynamically list repositories
-      new Awesomplete(repository, {
-        list: lists,
-        replace: function(name) {
-          this.input.value = name.label
-        }
+      repositories.forEach(respository => {
+        const repositoryListItem = document.createElement("option");
+        repositoryListItem.textContent = respository.name;
+        repositoryListItem.value = respository.name;
+        respositoryList.appendChild(repositoryListItem);
       });
-      repository.addEventListener("awesomplete-select", function(event) {
-        if (event.target.value !== '') {
-          searchBooksObj.repositoryIds = [event.text.value];
-        }
-      });
+
+      // const lists = repositories.map((i) => [i.name, i.id]);
+      // //use awesomplete js library to dynamically list repositories
+      // new Awesomplete(repository, {
+      //   list: lists,
+      //   replace: function(name) {
+      //     this.input.value = name.label
+      //   }
+      // });
+      // repository.addEventListener("awesomplete-select", function(event) {
+      //   if (event.target.value !== '') {
+      //     searchBooksObj.repositoryIds = [event.text.value];
+      //   }
+      // });
     })
     .catch(error => console.error(error));
 }
