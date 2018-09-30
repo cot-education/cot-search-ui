@@ -14,6 +14,7 @@
   background-color: #6c757d;
   border-color: #6c757d;
   color: #fff;
+  display: none;
 }
 #clear-button:hover {
 background-color: #5a6268;

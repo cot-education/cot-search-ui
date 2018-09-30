@@ -164,9 +164,11 @@ let licenseArr = []
 searchBooksObj.licenseCodes = licenseArr;
 //populates searchBooksObj's licensesCodes key
 function getLicences() {
+
   //these are the licenses provided from the spec that the user can select in a dropdown format
-  const licenses = ["CC BY", "CC BY-NC", "CC BY-NC-ND", "CC BY-NC-SA", "CC BY-SA", "EMUCL", "GFDL", "GGPL", "OPL", "PD"]
+  const licenses = ["All", "CC BY", "CC BY-NC", "CC BY-NC-ND", "CC BY-NC-SA", "CC BY-SA", "EMUCL", "GFDL", "GGPL", "OPL", "PD"]
   const licenseList = document.getElementById('license-select');
+
   for(let i = 0; i < licenses.length; i++) {
     const licenseListItem = document.createElement("option");
     licenseListItem.textContent = licenses[i];
@@ -196,6 +198,7 @@ function getLicences() {
 
 let respositoryArr = []
 searchBooksObj.repositoryIds
+
 //this populates/GETs the repositories. populates searchBooksObj's repositories key
 function getRepositories() {
   $('#repository').multiselect({
@@ -213,6 +216,7 @@ function getRepositories() {
       searchBooksObj.repositoryIds = $('#repository').val();
     }
   });
+
   fetch(baseUrl + 'repositories')
     .then(response => response.json())
     .then(repositories => {
