@@ -1,122 +1,258 @@
-const btn = document.getElementById('search-button');
-const list = document.getElementById('list');
+$(document).ready(function() {
+//our search object
+let searchBooksObj = {}
+//array for inputting and deleting licenses
+let licenseArray = [];
 
+//the URL base with which we can concat/specify our endpoints
 let baseUrl = `http://52.11.188.162/`;
 
-const author = document.querySelector('#author-name');
-const title = document.querySelector('#title');
+let loader = document.querySelector('.loader');
 
-function getAuthor() {
-  // fetch(`http://52.11.188.162/author`)
-  //   .then(response => response.json())
-  //   .then(data => console.log(data));
-}
-
-
-//This POST /search part is where I am a little lost. I think I need to
-//get the user input, then search the respective GET endpoints and retrieve the
-//appropriate Ids, then build this object with said Ids, then make a POST request
-//to get more accurate results. I feel like I'm either missing something or
-//overcomplicating this part. Previously, I was just calling the resources endpoint
-//and trying to match the user input with the right resource, but I see now why
-//that isn't a good approach. I'm just a little stuck at what to do now.
-let searchBooksObj = {
-  "authorIds": [
-    0
-  ],
-  "editorIds": [
-    0
-  ],
-  "licenseCodes": [
-    "string"
-  ],
-  "partialTitle": "string",
-  "partialUrl": "string",
-  "repositoryIds": [
-    0
-  ],
-  "tagIds": [
-    0
-  ]
-}
-
-//I am currently trying to use the /search endpoint to get better results.
+//POST to /search to retrieve data
 function searchBooks() {
-  fetch(`http://52.11.188.162/search`, {
+  //if object is empty, ask user to enter data to see results
+  if (Object.keys(searchBooksObj).length === 0) {
+    alert('Please, enter some data to see results.')
+    return;
+  };
+
+  //this log just is to double-check the actual body of the object we're sending
+  console.log(JSON.stringify(searchBooksObj));
+  loader.style.display = 'block';
+
+  fetch(baseUrl + 'search', {
     body: JSON.stringify(searchBooksObj),
     cache: 'no-cache',
     headers: {
       'content-type': 'application/json',
     },
-    method: 'POST',
-    mode: 'cors',
-    redirect: 'follow',
+    method: 'POST'
   }).then(response => response.json())
-    .then(data => console.log(data))
+    .then(data => {
+      buildList(data);
+      loader.style.display = 'none';
+      window.scroll({
+        top: 700,
+        behavior: 'smooth'
+      })
+    })
+
     .catch(error => console.error(error));
-
 }
 
-
-
+//kick things off when the page loads
 function init() {
-  populateLicenseList();
-  populateDisciplineList();
+  getTitle();
+  getAuthors();
+  getAncillaries()
+  getPeerReviews()
 }
+  // call these outside of init() in order to use multiselect library
+  getLicences();
+  getDisciplines();
+  getRepositories();
 
-btn.addEventListener("click", () => {
-  clear();
-  getAuthor();
+//invoke searchBooks and send POST request
+const searchButton = document.getElementById('search-button');
+searchButton.addEventListener("click", () => {
   searchBooks();
+  clear();
 });
 
+//clear input text fields and clear object
+const clearButton = document.getElementById('clear-button');
+clearButton.addEventListener('click', () => {
+  getLicences();
+  getDisciplines();
+  getRepositories();
+  $('#disciplines').multiselect('deselectAll');
+  $('#license-select').multiselect('refresh');
+  $('#repository').multiselect('deselectAll');
+  searchBooksObj = {};
+  licenseArray = [];
+  searchBooksObj.tagIds = [];
+  document.querySelectorAll('[type="text"]').forEach(input => input.value = '');
+  clear();
+});
 
-// These are the licenses provided from the spec that the user can select
-const populateLicenseList = () => {
-  const licenses = ["CC BY", "CC BY-NC", "CC BY-NC-ND", "CC BY-NC-SA", "CC BY-SA", "Custom", "EMUCL", "GFDL", "GGPL", "OPL", "PD"]
-  const licenseList = document.getElementById('license-select');
-  for(let i = 0; i < licenses.length; i++) {
-    const licenseListItem = document.createElement("option");
-      licenseListItem.textContent = licenses[i];
-      licenseListItem.value = licenses[i];
-      licenseList.appendChild(licenseListItem);
-  }
+let disciplineArr = []
+searchBooksObj.tagIds = disciplineArr;
+//this populates/GETs disciplines. populate searchBooksObj's tagIds key
+function getDisciplines()  {
+  $('#disciplines').multiselect({
+    includeSelectAllOption: true,
+    buttonText: function(options, select) {
+      return 'Select one or more';
+    },
+    onChange: function(option, checked, select) {
+      $(option).each(function(index, id) {
+        disciplineArr.push(id.value);
+      });
+      searchBooksObj.tagIds = disciplineArr;
+    }
+  });
+  fetch(baseUrl + 'tag')
+    .then(disciplineResponse => disciplineResponse.json())
+    .then(disciplines => {
+      let data = disciplines.map(discipline => {
+        return {label: discipline.name, title: discipline.name, value: discipline.id};
+      });
+      // programmatically add data to select list using multiselect library
+      $('#disciplines').multiselect('dataprovider', data);
+  })
+  .catch(error => console.error(error));
 }
 
-// This populates the disciplines drop down
-const populateDisciplineList = () => {
-  fetch('http://52.11.188.162/' + 'tag').then(function(disciplineResponse) {
-    return disciplineResponse.json();
-  }).then(function(disciplines) {
-    const disciplineList = document.getElementById('discipline');
-    disciplines.forEach((discipline) => {
-      const disciplineListItem = document.createElement("option");
-        disciplineListItem.textContent = discipline.name;
-        disciplineListItem.value = discipline.name;
-        disciplineListItem.setAttribute('class', 'discipline-item');
-        disciplineList.appendChild(disciplineListItem);
-    });
+//get title from user input and populate searchBookObj's partialTitle key
+function getTitle() {
+  const title = document.querySelector('#title');
+  title.addEventListener('change', (e) => {
+    if (title.value !== '') {
+      searchBooksObj.partialTitle = e.target.value;
+    }
   });
 }
 
-// Build the results list from the user input
-const buildList = (resourceItem) => {
-  let li = `<li>
-            <p><strong>Title</strong>: ${resourceItem.title}</p>
-            <p><strong>Author/Editor</strong>: ${resourceItem.authors.length > 0 ? resourceItem.authors.map(author => author.name).join(' ') : 'Not found'}  </p>
-            <p><strong>Resource URL</strong>: ${resourceItem.url}</p>
-            <p><strong>Discipline</strong>: ${resourceItem.tags.length > 0 ? resourceItem.tags.map(tag => tag.name).join(' ') : 'Not found' }</p>
-            <p><strong>Repository</strong>: ${resourceItem.repository.name}</p>
-            <p><strong>License</strong>: ${resourceItem.license.name !== null && resourceItem.license.name.length < 12 ? resourceItem.license.name : 'Custom'}</p>
-            <p><strong>Peer Reviews</strong>: ${resourceItem.reviews !== null ? resourceItem.reviews :  'Not found'}</p>
-            <p><strong>Ancillaries</strong>: ${resourceItem.ancillariesUrl !== null ? resourceItem.ancillariesUrl : 'Not found'}</p>
-            </li>
-            <br>`
-  list.insertAdjacentHTML('beforeend', li);
+function getAuthors() {
+  const authorsList = document.querySelector('#author-name');
+  fetch(baseUrl + 'authors')
+    .then(response => response.json())
+    .then(authors => {
+      const lists = authors.map((i) => [i.name, i.id]);
+      //use awesomplete js library to dynamically list authors
+      new Awesomplete(authorsList, {
+        list: lists,
+        replace: function(name) {
+          this.input.value = name.label
+        }
+      });
+      //get selected author and populate tag key in searchBookObj to POST
+      authorsList.addEventListener("awesomplete-select", function(event) {
+        searchBooksObj.authorIds = [event.text.value];
+      });
+    })
+    .catch(error => console.error(error));
 }
 
-// This just erases the unordered list when the user makes multiple searches.
-const clear = () => {
+function getPeerReviews() {
+  const peerReviewsList = document.querySelector("#peer-reviews-list");
+  peerReviewsList.addEventListener('change', (e) => {
+    let peerReview = peerReviewsList.options[peerReviewsList.selectedIndex].value;
+    if (peerReview === 'yes') {
+     searchBooksObj.hasReview = true
+    } else {
+      searchBooksObj.hasReview = false
+    }
+  });
+}
+
+function getAncillaries() {
+  const ancillariesList = document.querySelector("#ancillaries-list");
+  ancillariesList.addEventListener('change', (e) => {
+    let ancillary = ancillariesList.options[ancillariesList.selectedIndex].value;
+    if (ancillary === 'yes') {
+     searchBooksObj.hasAncillaries = true
+     searchBooksObj.hasAncillary = true
+    } else {
+      searchBooksObj.hasAncillaries = false
+      searchBooksObj.hasAncillary = false
+    }
+  });
+}
+
+let licenseArr = []
+searchBooksObj.licenseCodes = licenseArr;
+//populates searchBooksObj's licensesCodes key
+function getLicences() {
+
+  //these are the licenses provided from the spec that the user can select in a dropdown format
+  const licenses = ["All", "CC BY", "CC BY-NC", "CC BY-NC-ND", "CC BY-NC-SA", "CC BY-SA", "EMUCL", "GFDL", "GGPL", "OPL", "PD"]
+  const licenseList = document.getElementById('license-select');
+
+  for(let i = 0; i < licenses.length; i++) {
+    const licenseListItem = document.createElement("option");
+    licenseListItem.textContent = licenses[i];
+    licenseListItem.value = licenses[i];
+    licenseList.appendChild(licenseListItem);
+  }
+
+  $('#license-select').multiselect({
+    includeSelectAllOption: true,
+    buttonText: function(options, select) {
+      return 'Select one or more';
+    },
+    onChange: function(option, checked, select) {
+      $(option).each(function(index, id) {
+        licenseArr.push(id.value);
+      });
+      searchBooksObj.licenseCodes = licenseArr;
+    },
+    onSelectAll: function() {
+      searchBooksObj.licenseCodes = $('#license-select').val();
+    },
+    onDeselectAll: function() {
+      console.log('isdf')
+    }
+  });
+}
+
+let respositoryArr = []
+searchBooksObj.repositoryIds
+
+//this populates/GETs the repositories. populates searchBooksObj's repositories key
+function getRepositories() {
+  $('#repository').multiselect({
+    includeSelectAllOption: true,
+    buttonText: function(options, select) {
+      return 'Select one or more';
+    },
+    onChange: function(option, checked, select) {
+      $(option).each(function(index, id) {
+        respositoryArr.push(id.value);
+      });
+      searchBooksObj.repositoryIds = respositoryArr;
+    },
+    onSelectAll: function() {
+      searchBooksObj.repositoryIds = $('#repository').val();
+    }
+  });
+
+  fetch(baseUrl + 'repositories')
+    .then(response => response.json())
+    .then(repositories => {
+      let data = repositories.map(repositories => {
+        return {label: repositories.name, title: repositories.name, value: repositories.id};
+      });
+      $('#repository').multiselect('dataprovider', data)
+    })
+    .catch(error => console.error(error));
+}
+
+const list = document.getElementById('list');
+// Build the results list from the user input
+function buildList(searchResults) {
+  searchResults.forEach(result => {
+    let li = `<li>
+                <p><strong>Title</strong>: ${result.title}</p>
+                <p><strong>Author/Editor</strong>: ${result.authors.length > 0 ? result.authors.map(author => author.name).join(' ') : 'Not found'}  </p>
+                <p><strong>Resource URL</strong>: ${result.url}</p>
+                <p><strong>Discipline</strong>: ${result.tags.length > 0 ? result.tags.map(tag => tag.name).join(' ') : 'Not found' }</p>
+                <p><strong>Repository</strong>: ${result.repository.name}</p>
+                <p><strong>License</strong>: ${result.license.name !== null && result.license.name.length < 12 ? result.license.name : 'Custom'}</p>
+                <p><strong>Peer Reviews</strong>: ${result.reviews !== null ? result.reviews :  'Not found'}</p>
+                <p><strong>Ancillaries</strong>: ${result.ancillariesUrl !== null ? result.ancillariesUrl : 'Not found'}</p>
+              </li>
+              <br>`
+  list.insertAdjacentHTML('beforeend', li);
+  });
+}
+
+//this just erases the unordered list when the user makes multiple searches.
+function clear() {
   document.getElementById('list').innerHTML = "";
 };
+
 document.addEventListener("DOMContentLoaded", init);
+
+}); //end jquery
