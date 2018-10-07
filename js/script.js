@@ -1,8 +1,6 @@
 $(document).ready(function() {
 //our search object
 let searchBooksObj = {}
-//array for inputting and deleting licenses
-let licenseArray = [];
 
 //the URL base with which we can concat/specify our endpoints
 let baseUrl = `http://52.11.188.162/`;
@@ -30,6 +28,10 @@ function searchBooks() {
     method: 'POST'
   }).then(response => response.json())
     .then(data => {
+      if (data.length === 0) {
+        alert('No results found. Try searching again');
+        clearButton.click();
+      }
       buildList(data);
       loader.style.display = 'none';
       window.scroll({
@@ -40,15 +42,10 @@ function searchBooks() {
 
     .catch(error => console.error(error));
 }
-
-//kick things off when the page loads
-function init() {
   getTitle();
   getAuthors();
-  getAncillaries()
   getPeerReviews()
-}
-  // call these outside of init() in order to use multiselect library
+  getAncillaries()
   getLicences();
   getDisciplines();
   getRepositories();
@@ -70,14 +67,13 @@ clearButton.addEventListener('click', () => {
   $('#license-select').multiselect('refresh');
   $('#repository').multiselect('deselectAll');
   searchBooksObj = {};
-  licenseArray = [];
-  searchBooksObj.tagIds = [];
+  licenseArr = [];
+  disciplineArr = [];
   document.querySelectorAll('[type="text"]').forEach(input => input.value = '');
   clear();
 });
 
 let disciplineArr = []
-searchBooksObj.tagIds = disciplineArr;
 //this populates/GETs disciplines. populate searchBooksObj's tagIds key
 function getDisciplines()  {
   $('#disciplines').multiselect({
@@ -161,13 +157,13 @@ function getAncillaries() {
   });
 }
 
+// since the object for this takes an array, I am setting it here
 let licenseArr = []
-searchBooksObj.licenseCodes = licenseArr;
 //populates searchBooksObj's licensesCodes key
 function getLicences() {
 
   //these are the licenses provided from the spec that the user can select in a dropdown format
-  const licenses = ["All", "CC BY", "CC BY-NC", "CC BY-NC-ND", "CC BY-NC-SA", "CC BY-SA", "EMUCL", "GFDL", "GGPL", "OPL", "PD"]
+  const licenses = ["CC BY", "CC BY-NC", "CC BY-NC-ND", "CC BY-NC-SA", "CC BY-SA", "EMUCL", "GFDL", "GGPL", "OPL", "PD"]
   const licenseList = document.getElementById('license-select');
 
   for(let i = 0; i < licenses.length; i++) {
@@ -184,22 +180,25 @@ function getLicences() {
     },
     onChange: function(option, checked, select) {
       $(option).each(function(index, id) {
-        licenseArr.push(id.value);
+        let i = licenseArr.indexOf(id.value);
+        if (i === -1) {
+          licenseArr.push(id.value);  
+        } else {
+          licenseArr.splice(i, 1);
+          if (licenseArr.length === 0) {
+            licenseArr = null;
+          }
+        }
       });
       searchBooksObj.licenseCodes = licenseArr;
     },
     onSelectAll: function() {
       searchBooksObj.licenseCodes = $('#license-select').val();
-    },
-    onDeselectAll: function() {
-      console.log('isdf')
     }
   });
 }
-
+// since the object for this takes an array, I am setting it here
 let respositoryArr = []
-searchBooksObj.repositoryIds
-
 //this populates/GETs the repositories. populates searchBooksObj's repositories key
 function getRepositories() {
   $('#repository').multiselect({
@@ -252,7 +251,4 @@ function buildList(searchResults) {
 function clear() {
   document.getElementById('list').innerHTML = "";
 };
-
-document.addEventListener("DOMContentLoaded", init);
-
 }); //end jquery
