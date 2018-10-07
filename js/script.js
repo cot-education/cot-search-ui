@@ -11,9 +11,11 @@ let loader = document.querySelector('.loader');
 function searchBooks() {
   //if object is empty, ask user to enter data to see results
   if (Object.keys(searchBooksObj).length === 0) {
-    alert('Please, enter some data to see results.')
+    alert('Please, enter some data to see results.');
     return;
   };
+
+  console.log(searchBooksObj);
 
   //this log just is to double-check the actual body of the object we're sending
   console.log(JSON.stringify(searchBooksObj));
@@ -83,7 +85,15 @@ function getDisciplines()  {
     },
     onChange: function(option, checked, select) {
       $(option).each(function(index, id) {
-        disciplineArr.push(id.value);
+        let i = disciplineArr.indexOf(id.value);
+        if (i === -1) {
+          disciplineArr.push(id.value);  
+        } else {
+          disciplineArr.splice(i, 1);
+          if (disciplineArr.length === 0) {
+            disciplineArr.push(0);
+          }
+        }
       });
       searchBooksObj.tagIds = disciplineArr;
     }
@@ -136,7 +146,7 @@ function getPeerReviews() {
   peerReviewsList.addEventListener('change', (e) => {
     let peerReview = peerReviewsList.options[peerReviewsList.selectedIndex].value;
     if (peerReview === 'yes') {
-     searchBooksObj.hasReview = true
+      searchBooksObj.hasReview = true
     } else {
       searchBooksObj.hasReview = false
     }
@@ -148,8 +158,8 @@ function getAncillaries() {
   ancillariesList.addEventListener('change', (e) => {
     let ancillary = ancillariesList.options[ancillariesList.selectedIndex].value;
     if (ancillary === 'yes') {
-     searchBooksObj.hasAncillaries = true
-     searchBooksObj.hasAncillary = true
+      searchBooksObj.hasAncillaries = true
+      searchBooksObj.hasAncillary = true
     } else {
       searchBooksObj.hasAncillaries = false
       searchBooksObj.hasAncillary = false
@@ -186,7 +196,7 @@ function getLicences() {
         } else {
           licenseArr.splice(i, 1);
           if (licenseArr.length === 0) {
-            licenseArr = null;
+            licenseArr.push(0);
           }
         }
       });
@@ -197,6 +207,8 @@ function getLicences() {
     }
   });
 }
+
+
 // since the object for this takes an array, I am setting it here
 let respositoryArr = []
 //this populates/GETs the repositories. populates searchBooksObj's repositories key
@@ -208,7 +220,15 @@ function getRepositories() {
     },
     onChange: function(option, checked, select) {
       $(option).each(function(index, id) {
-        respositoryArr.push(id.value);
+        let i = respositoryArr.indexOf(id.value);
+        if (i === -1) {
+          respositoryArr.push(id.value);  
+        } else {
+          respositoryArr.splice(i, 1);
+          if (respositoryArr.length === 0) {
+            respositoryArr.push(0);
+          }
+        }
       });
       searchBooksObj.repositoryIds = respositoryArr;
     },
